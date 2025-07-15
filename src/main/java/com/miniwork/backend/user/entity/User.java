@@ -45,4 +45,8 @@ public class User {
         if (this.status == null) this.status = UserStatus.OFFLINE;
         if (this.role == null) this.role = UserRole.MEMBER;
     }
+
+    public void updateLastLoginAt(LocalDateTime loginTime) {
+        this.lastLoginAt = loginTime;
+    }
 }

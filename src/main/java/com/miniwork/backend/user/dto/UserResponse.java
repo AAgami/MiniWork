@@ -1,5 +1,6 @@
 package com.miniwork.backend.user.dto;
 
+import com.miniwork.backend.user.entity.User;
 import com.miniwork.backend.user.entity.UserRole;
 import com.miniwork.backend.user.entity.UserStatus;
 import lombok.*;
@@ -36,4 +37,16 @@ public class UserResponse {
 
     // 계정 생성 시각
     private LocalDateTime createdAt;
+
+    public static UserResponse from(User user) {
+        return UserResponse.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .lastLoginAt(user.getLastLoginAt())
+                .createdAt(user.getCreatedAt())
+                .build();
+    }
 }
