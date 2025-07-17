@@ -1,28 +1,58 @@
 package com.miniwork.backend.auth;
 
+import com.miniwork.backend.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-/*개발 중에만 인증 없이 모든 요청을 허용하는 시큐리티 설정*/
+/* Spring Security 설정 */
+/* JWT 필터 등록 */
+/* 세션 사용 안함 */
+/* 회원가입, 로그인, 엔드포인트는 인증 없이 허용 */
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
-    /*TODO: 로그인 기능 구현과 JWT 적용시 개발 예정*/
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        //csrf 비활성화
+        JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(jwtTokenProvider, userRepository);
+
         http
                 .csrf(csrf -> csrf.disable())
-                //모든 요청 허용
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-                //기본 로그인 폼 제거
-                .formLogin(login -> login.disable())
-                //기본 인증창 제거
-                .httpBasic(httpBasic -> httpBasic.disable());
+                .sessionManagement(sm -> sm
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authorizeHttpRequests(auth -> auth
+                        // 1) 정적 리소스 (css/js/images 등)
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        // 2) 루트 / index.html
+                        .requestMatchers("/", "/index.html").permitAll()
+                        // 3) 로그인/회원가입 API
+                        .requestMatchers(HttpMethod.POST, "/api/users/signup", "/api/users/login").permitAll()
+                        // 4) 나머지 요청은 인증 필요
+                        .anyRequest().authenticated()
+                )
+                // JWT 필터 등록
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     @Bean
