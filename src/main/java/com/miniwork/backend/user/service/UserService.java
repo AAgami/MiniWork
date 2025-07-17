@@ -14,4 +14,6 @@ public interface UserService {
 
     UserResponse signup(SignupRequest signupRequest);
     LoginResponse login(LoginRequest loginRequest); // 추가
+    // 현재 사용자 정보를 조회
+    UserResponse getCurrentUser();
 }

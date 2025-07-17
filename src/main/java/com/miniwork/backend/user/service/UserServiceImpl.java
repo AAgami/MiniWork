@@ -13,6 +13,7 @@ import com.miniwork.backend.user.entity.UserStatus;
 import com.miniwork.backend.user.mapper.UserMapper;
 import com.miniwork.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,18 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final JwtTokenProvider jwtTokenProvider;
+
+    @Override
+    public UserResponse getCurrentUser() {
+        // 1. SecurityContext에서 인증 정보(Principal(email)) 꺼내기
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        //2. DB에서 User 엔티티 조회
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        //3. DTO 변환 후 반환
+        return userMapper.toResponse(user);
+    }
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {

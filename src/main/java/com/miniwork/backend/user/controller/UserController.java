@@ -9,10 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /* 사용자 관련 API 요청 처리 컨트롤러 */
 @RestController
@@ -20,6 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
+    /* 현재 로그인한 사용자 정보 조회 */
+    /* GET /api/users/me */
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getCurrentUser() {
+        UserResponse response = userService.getCurrentUser();
+        return ResponseEntity.ok(response);
+    }
 
     /* 회원가입 요청 처리 */
     /* POST /api/users/signup */
