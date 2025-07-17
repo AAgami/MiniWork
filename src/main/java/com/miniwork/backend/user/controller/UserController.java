@@ -1,5 +1,7 @@
 package com.miniwork.backend.user.controller;
 
+import com.miniwork.backend.user.dto.LoginRequest;
+import com.miniwork.backend.user.dto.LoginResponse;
 import com.miniwork.backend.user.dto.SignupRequest;
 import com.miniwork.backend.user.dto.UserResponse;
 import com.miniwork.backend.user.service.UserService;
@@ -24,6 +26,14 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<UserResponse> signup(@RequestBody @Valid SignupRequest signupRequest) {
         UserResponse response = userService.signup(signupRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    /* 로그인 요청 처리 */
+    /* POST /api/users/login */
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
+        LoginResponse response = userService.login(loginRequest);
         return ResponseEntity.ok(response);
     }
 }

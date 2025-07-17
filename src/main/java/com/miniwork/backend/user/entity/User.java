@@ -35,6 +35,7 @@ public class User {
     @Column(nullable = false)
     private UserRole role; // ADMIN, MEMBER, GUEST
 
+    @Column(nullable = true)
     private LocalDateTime lastLoginAt;
 
     private LocalDateTime createdAt;
@@ -42,8 +43,12 @@ public class User {
     @PrePersist
     public void onCreate() {
         this.createdAt = LocalDateTime.now();
-        if (this.status == null) this.status = UserStatus.OFFLINE;
-        if (this.role == null) this.role = UserRole.MEMBER;
+        if (this.status == null) {
+            this.status = UserStatus.OFFLINE;
+        }
+        if (this.role == null) {
+            this.role = UserRole.MEMBER;
+        }
     }
 
     public void updateLastLoginAt(LocalDateTime loginTime) {
