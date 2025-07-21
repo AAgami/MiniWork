@@ -41,7 +41,7 @@ public class User {
     private LocalDateTime createdAt;
 
     @PrePersist
-    public void onCreate() {
+    public void prePersist() {
         this.createdAt = LocalDateTime.now();
         if (this.status == null) {
             this.status = UserStatus.OFFLINE;
