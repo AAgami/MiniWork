@@ -62,7 +62,7 @@ public class JwtTokenProvider {
     //Request에서 토큰 가져오기 (Authorization header)
     public String resolveToken(HttpServletRequest request){
         String bearer = request.getHeader("Authorization");
-        if(bearer != null && bearer.startsWith("Bearer ")){
+        if(bearer != null && bearer.startsWith("Bearer")){
             return bearer.substring(7);
         }
         return null;
