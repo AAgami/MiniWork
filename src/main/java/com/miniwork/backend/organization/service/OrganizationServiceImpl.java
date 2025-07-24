@@ -1,5 +1,7 @@
 package com.miniwork.backend.organization.service;
 
+import com.miniwork.backend.common.exception.CustomException;
+import com.miniwork.backend.common.exception.ErrorCode;
 import com.miniwork.backend.organization.dto.CreateOrganizationRequest;
 import com.miniwork.backend.organization.dto.InviteMemberRequest;
 import com.miniwork.backend.organization.dto.MembershipResponse;
@@ -33,23 +35,23 @@ public class OrganizationServiceImpl implements OrganizationService {
     private final OrganizationMapper organizationMapper;
     private final MembershipMapper membershipMapper;
 
-    // 새로운 조직을 생성 후 생성자를 admin 권한으로 자동 등록
+    // 1) 새로운 조직을 생성 후 생성자를 admin 권한으로 자동 등록
     @Override
     public OrganizationResponse createOrganization(CreateOrganizationRequest request, String creatorEmail) {
-        // 1) 도메인 중복 체크
+        // 1-1) 도메인 중복 체크
         if (organizationRepository.existsByDomain(request.getDomain())) {
-            throw new IllegalArgumentException("이미 존재하는 도메인입니다.");
+            throw new CustomException(ErrorCode.DOMAIN_DUPLICATED);
         }
 
-        // 2) Organization 엔티티로 변환 후 저장
+        // 1-2) DTO -> Organization 엔티티로 변환 후 저장
         Organization org = organizationMapper.toEntity(request);
         org = organizationRepository.save(org);
 
-        // 3) 생성자 조회
+        // 1-3) 생성자 User 조회
         User creator = userRepository.findByEmail(creatorEmail)
-                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 4) ADMIN 권한으로 Membership 생성 및 저장
+        // 1-4) ADMIN 권한으로 Membership 생성 및 저장 (APPROVED)
         Membership adminMembership = Membership.builder()
                 .organization(org)
                 .user(creator)
@@ -58,12 +60,15 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .build();
         membershipRepository.save(adminMembership);
 
-        // 5) 생성된 조직 정보를 DTO로 변환하여 반환
+        // 1-5) 생성된 조직 정보를 DTO로 변환하여 반환
         return organizationMapper.toResponse(org);
     }
-
+    // 2) 조직에 새로운 멤버 초대 (INVITED)
     @Override
     public MembershipResponse inviteMember(Long orgId, InviteMemberRequest dto) {
+        // 2-1 )조직 조회
+
+        //
         return null;
     }
 
