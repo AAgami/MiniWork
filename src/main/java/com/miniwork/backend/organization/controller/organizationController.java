@@ -13,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+// TODO: 테스트! 삭제예정
+
 /* 조직 관련 API 요청 처리 컨트롤러 */
 @RestController
 @RequestMapping("/api/orgs")
