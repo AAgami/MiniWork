@@ -1,5 +1,5 @@
 ---
-name: "\U0001F41B 버그 리포트"
+name: "\U0001F41B Bug Report"
 about: 동작하지 않거나 오류가 발생한 문제를 보고해주세요.
 title: "[BUG] 내용"
 labels: bug
