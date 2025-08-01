@@ -12,5 +12,6 @@ public class MembershipResponse {
     private String userEmail;
     private Role role;
     private MembershipStatus status;
-    private LocalDateTime joinedAt;
+    private LocalDateTime invitedAt;
+    private LocalDateTime expiresAt;
 }

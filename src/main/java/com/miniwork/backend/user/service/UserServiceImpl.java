@@ -55,8 +55,6 @@ public class UserServiceImpl implements UserService {
         //4. 토큰
         String token = jwtTokenProvider.createToken(user.getEmail(), user.getRole().name());
 
-
-
         // 5. 응답 객체 반환
         return new LoginResponse(user.getName(), user.getEmail(), token);
     }

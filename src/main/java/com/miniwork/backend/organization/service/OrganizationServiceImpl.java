@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -63,14 +64,36 @@ public class OrganizationServiceImpl implements OrganizationService {
         // 1-5) 생성된 조직 정보를 DTO로 변환하여 반환
         return organizationMapper.toResponse(org);
     }
+
     // 2) 조직에 새로운 멤버 초대 (INVITED)
     @Override
-    public MembershipResponse inviteMember(Long orgId, InviteMemberRequest dto) {
-        // 2-1 )조직 조회
+    public MembershipResponse inviteMember(Long orgId, InviteMemberRequest request) {
+        // 2-1) 조직 조회 없으면 INVALID_INPUT
+        Organization org = organizationRepository.findById(orgId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_INPUT));
 
-        //
-        return null;
+        // 2-2) 초대할 사용자 조회 (없으면 USER_NOT_FOUND)
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 2-3) 이미 조직 멤버인지 확인 (이미 멤버면 INVALID_INPUT)
+        if (membershipRepository.findByOrganizationAndUser(org, user).isPresent()){
+            throw new CustomException(ErrorCode.INVALID_INPUT);
+        }
+        LocalDateTime now = LocalDateTime.now();
+
+        // 2-4) INVITED 상태로 Membership 엔티티 생성 및 저장
+        Membership invitation = Membership.builder()
+                .organization(org)
+                .user(user)
+                .status(MembershipStatus.INVITED)
+                .role(Role.MEMBER)
+                .invitedAt(now)
+                .expiresAt(now.plusDays(3))
+                .build();
+        membershipRepository.save(invitation);
+
+        return membershipMapper.toResponse(invitation);
     }
+
 
     @Override
     public MembershipResponse approveMember(Long orgId, Long membershipId) {

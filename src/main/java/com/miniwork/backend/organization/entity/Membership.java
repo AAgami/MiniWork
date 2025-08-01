@@ -1,5 +1,7 @@
 package com.miniwork.backend.organization.entity;
 
+import com.miniwork.backend.common.exception.CustomException;
+import com.miniwork.backend.common.exception.ErrorCode;
 import com.miniwork.backend.user.entity.User;
 import com.miniwork.backend.user.entity.UserRole;
 import jakarta.persistence.*;
@@ -37,17 +39,20 @@ public class Membership {
     private MembershipStatus status;
 
     @Column(nullable = false)
-    private LocalDateTime joinedAt;
+    private LocalDateTime invitedAt;
+
+    @Column(nullable = true)
+    private LocalDateTime expiresAt;
 
     @PrePersist
     private void prePersist() {
-        this.joinedAt = LocalDateTime.now();
+        this.invitedAt = LocalDateTime.now();
     }
 
     // 초대 상태 → 승인 상태로 전환
     public void approve() {
         if (this.status != MembershipStatus.INVITED) {
-            throw new IllegalStateException("현재 상태에서 승인할 수 없습니다.");
+            throw new CustomException(ErrorCode.INTERNAL_ERROR);
         }
         this.status = MembershipStatus.APPROVED;
     }

@@ -10,5 +10,7 @@ import org.mapstruct.ReportingPolicy;
 public interface MembershipMapper {
     @Mapping(target="userId", source="user.id")
     @Mapping(target="userEmail",source="user.email")
+    @Mapping(target="invitedAt", source="invitedAt")
+    @Mapping(target="expiresAt", source="expiresAt")
     MembershipResponse toResponse(Membership membership);
 }
