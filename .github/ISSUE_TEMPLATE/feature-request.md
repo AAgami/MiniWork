@@ -1,5 +1,5 @@
 ---
-name: "\U0001F6E0️ Feature Request"
+name: Feature Request
 about: 추가하고 싶은 기능이나 개선 아이디어가 있을 때 사용해주세요.
 title: "[FEAT] 제목"
 labels: enhancement
